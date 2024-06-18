@@ -1,5 +1,35 @@
 #!/bin/bash
 
+# Function to prompt the user for yes/no input
+ask_yes_no() {
+    while true; do
+        read -p "$1 [y/n]: " yn
+        case $yn in
+            [Yy]* ) return 0;;
+            [Nn]* ) return 1;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+}
+
+# Prompt for PX4 toolchain installation
+install_px4_toolchain=false
+install_nuttx=true
+install_sim_tools=true
+if ask_yes_no "Do you want to install the PX4 toolchain?"; then
+    install_px4_toolchain=true
+    if ask_yes_no "Do you want to install NuttX?"; then
+        install_nuttx=true
+    else
+        install_nuttx=false
+    fi
+    if ask_yes_no "Do you want to install simulation tools?"; then
+        install_sim_tools=true
+    else
+        install_sim_tools=false
+    fi
+fi
+
 # Update and upgrade the system
 sudo apt update && sudo apt upgrade -y
 
@@ -55,5 +85,21 @@ sudo cp client.conf /etc/openvpn/client/
 
 # Set local RTC
 sudo timedatectl set-local-rtc 1
+
+# Install PX4 toolchain if selected
+if [ "$install_px4_toolchain" = true ]; then
+    git clone https://github.com/PX4/PX4-Autopilot.git --recursive
+    cd PX4-Autopilot
+    if [ "$install_nuttx" = false ] && [ "$install_sim_tools" = false ]; then
+        bash ./Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools
+    elif [ "$install_nuttx" = false ]; then
+        bash ./Tools/setup/ubuntu.sh --no-nuttx
+    elif [ "$install_sim_tools" = false ]; then
+        bash ./Tools/setup/ubuntu.sh --no-sim-tools
+    else
+        bash ./Tools/setup/ubuntu.sh
+    fi
+    cd ..
+fi
 
 echo "All applications have been installed successfully."
