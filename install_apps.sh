@@ -51,7 +51,9 @@ cp .vimrc ~/
 cp .tmux.conf ~/
 
 # Copy client.conf to /etc/openvpn/client/
-sudo mkdir -p /etc/openvpn/client/
 sudo cp client.conf /etc/openvpn/client/
+
+# Set local RTC
+sudo timedatectl set-local-rtc 1
 
 echo "All applications have been installed successfully."
