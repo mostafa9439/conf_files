@@ -76,6 +76,12 @@ sudo apt install sublime-text -y
 # Install vim
 sudo apt install vim -y
 
+# Instal NerdTree
+mkdir -p ~/.vim/pack/vendor/start
+git clone --depth 1 \
+  https://github.com/preservim/nerdtree.git \
+  ~/.vim/pack/vendor/start/nerdtree
+
 # Copy .vimrc and .tmux.conf to the home directory
 cp .vimrc ~/
 cp .tmux.conf ~/
